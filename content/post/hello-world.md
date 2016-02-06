@@ -5,6 +5,8 @@ title = "Hello, world!"
 
 +++
 
-## A headline
+## Hugo の書き心地の調査
 
-Some Content
+今までは [Tumblr](http://aeas44.tumblr.com/) で色々と書いてきたけど、やっぱり手元でレビューできないのはつらいな、と思うようになりました。
+
+かつては [Jekyll](https://jekyllrb.com/) を使っていたこともあったけど、Hugo というのが流行りのようなので、試しています。

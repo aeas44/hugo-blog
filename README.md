@@ -1,16 +1,29 @@
-# Flow
+# ブログ更新の流れ
 
-## Create new post
+## 新規ポストの作成
 
 ```sh
 $ hugo new post/hello-world.md
 ```
 
-You can edit `content/post/hello-world.md` for your post.
+そして `content/post/hello-world.md` をマークダウンで編集する。
 
-## Build and observe posts
+## 編集
 
 ```sh
 $ hugo server -t hikari --buildDrafts
 ```
 
+書きかけの記事も含めてローカルにウェブサーバを立ち上げる。
+
+## 記事のビルド
+
+```
+$ hugo -D -t hikari
+```
+
+`public` の下にビルド結果が保存される。
+
+## GitHub Pages への反映
+
+`public` ディレクトリを `aeas44.github.io` リポジトリに移して `git push` する。

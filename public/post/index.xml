@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Learn to program</title>
-    <link>https://aeas44.github.io/</link>
-    <description>Recent content on Learn to program</description>
+    <title>Posts on Learn to program</title>
+    <link>https://aeas44.github.io/post/</link>
+    <description>Recent content in Posts on Learn to program</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <lastBuildDate>Sat, 06 Feb 2016 16:54:34 +0900</lastBuildDate>
-    <atom:link href="https://aeas44.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://aeas44.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Hello, world!</title>
