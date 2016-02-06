@@ -17,9 +17,11 @@
       <guid>https://aeas44.github.io/2016/02/06/hello-world</guid>
       <description>
 
-&lt;h2 id=&#34;a-headline:aa77bbfd89a7b0ff10def205b9c08d51&#34;&gt;A headline&lt;/h2&gt;
+&lt;h2 id=&#34;hugo-の書き心地の調査:aa77bbfd89a7b0ff10def205b9c08d51&#34;&gt;Hugo の書き心地の調査&lt;/h2&gt;
 
-&lt;p&gt;Some Content&lt;/p&gt;
+&lt;p&gt;今までは &lt;a href=&#34;http://aeas44.tumblr.com/&#34;&gt;Tumblr&lt;/a&gt; で色々と書いてきたけど、やっぱり手元でレビューできないのはつらいな、と思うようになりました。&lt;/p&gt;
+
+&lt;p&gt;かつては &lt;a href=&#34;https://jekyllrb.com/&#34;&gt;Jekyll&lt;/a&gt; を使っていたこともあったけど、Hugo というのが流行りのようなので、試しています。&lt;/p&gt;
 </description>
     </item>
     
