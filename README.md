@@ -11,7 +11,7 @@ $ hugo new post/hello-world.md
 ## 編集
 
 ```sh
-$ hugo server -t hikari --buildDrafts
+$ hugo server -t hugo-hikari-theme --buildDrafts
 ```
 
 書きかけの記事も含めてローカルにウェブサーバを立ち上げる。
@@ -19,7 +19,7 @@ $ hugo server -t hikari --buildDrafts
 ## 記事のビルド
 
 ```
-$ hugo -D -t hikari
+$ hugo -D -t hugo-hikari-theme
 ```
 
 `public` の下にビルド結果が保存される。
