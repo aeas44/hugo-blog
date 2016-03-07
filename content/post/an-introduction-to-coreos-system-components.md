@@ -1,3 +1,12 @@
++++
+date = "2016-03-08T16:54:34+09:00"
+draft = false
+title = "CoreOS 入門"
+
++++
+
+(この記事は「[An Introduction to CoreOS System Components](https://www.digitalocean.com/community/tutorials/an-introduction-to-coreos-system-components)」の翻訳です)
+
 ### What is CoreOS?
 
 CoreOS is a powerful Linux distribution built to make large, scalable deployments on varied infrastructure simple to manage. Based on a build of Chrome OS, CoreOS maintains a lightweight host system and uses Docker containers for all applications. This system provides process isolation and also allows applications to be moved throughout a cluster easily.
