@@ -49,4 +49,4 @@ SCaLE はコミュニティにより運営されている、オープンソー�
 
 ### ライセンス
 
-原文は [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/) で提供されています。本記事も同ライセンスに従います
+原文は [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/) で提供されています。本記事も同ライセンスに従います。
