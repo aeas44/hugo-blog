@@ -76,3 +76,7 @@ HTTP API は Docker コンテナの中からもアクセス可能であること
 CoreOS は多くの Linux ディストリビューションとは違います。設計上の意志決定はクラスタの管理のしやすさや、ポータビリティにもとづいて行われています。このような思想から、CoreOS という強力な、モダンでスケーラブルなディストリビューションが生まれました。
 
 さらに CoreOS について興味があれば、[CoreOS クラスタリングに関するガイド](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-coreos-cluster-on-digitalocean)をご覧ください。
+
+### ライセンス
+
+原文は [CC BY-NC-SA 4.0](http://creativecommons.org/licenses/by-nc-sa/4.0/) で提供されています。本記事も同ライセンスに従います。
