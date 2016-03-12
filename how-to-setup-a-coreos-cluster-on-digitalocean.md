@@ -1,6 +1,6 @@
 +++
 date = "2016-03-15T16:54:34+09:00"
-draft = false
+draft = true
 title = "CoreOS クラスタの構築方法"
 
 +++
