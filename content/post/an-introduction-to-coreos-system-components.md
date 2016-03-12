@@ -7,71 +7,72 @@ title = "CoreOS 入門"
 
 (この記事は「[An Introduction to CoreOS System Components](https://www.digitalocean.com/community/tutorials/an-introduction-to-coreos-system-components)」の翻訳です)
 
-### What is CoreOS?
+### CoreOS とは何か?
 
-CoreOS is a powerful Linux distribution built to make large, scalable deployments on varied infrastructure simple to manage. Based on a build of Chrome OS, CoreOS maintains a lightweight host system and uses Docker containers for all applications. This system provides process isolation and also allows applications to be moved throughout a cluster easily.
+CoreOS は大規模かつスケーラブルなデプロイを簡単に実現できる Linux ディストリビューションです。Chrome OS から派生した CoreOS は軽量なホスト環境を提供し、全てのアプリケーションは Docker コンテナとして実行します。これにより、プロセスの隔離とアプリケーションのクラスタ内での簡単な移行を実現します。
 
-To manage these clusters, CoreOS uses a globally distributed key-value store called etcd to pass configuration data between nodes. This component is also the platform for service discovery, allowing applications to be dynamically configured based on the information available through the shared resource.
+クラスタを管理するため、CoreOS は `etcd` と呼ばれるグローバルな key-value ストレージを使い、ノード間で設定情報を交換します。このコンポーネントのおかげで、共有情報を元にアプリケーションを動的に設定できます。このような機能をサービス・ディスカバリと呼びます。
 
-In order to schedule and manage applications across the entirety of the cluster, a tool called fleet is used. Fleet serves as a cluster-wide init system that can be used to manage processes across the entire cluster. This makes it easy to configure highly available applications and manage the cluster from a single point. It does this by tying into each individual node's systemd init system.
+クラスタ内でアプリケーションを管理したり、スケジューリングをしたりするため、`fleet` というソフトウェアが使われます。`fleet` はクラスタ全体の init システムとして振る舞い、クラスタ内のプロセスを管理します。これにより、高可用性アプリケーションの設定が可能となり、どのノードからでもクラスタをコントロールすることができるようになります。これは個々のノードの systemd init と連携することで実現されます。
 
-In this guide, we will introduce you to some key CoreOS concepts and introduce each of the core components that allow the system to work. In a later guide, we'll discuss [how to get started with CoreOS on DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-coreos-cluster-on-digitalocean).
+この記事では CoreOS のコンセプトを紹介し、それを実現するためのコンポーネントについて説明します。続いて [DigitalOcean での CoreOS のはじめかた](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-coreos-cluster-on-digitalocean) についてもご紹介します。
 
-### System Design
+### CoreOS の設計
 
-The general design of a CoreOS installation is geared towards clustering and containerization.
+全体的に CoreOS はクラスタリングとコンテナ運用がしやすいように作られています。
 
-The main host system is relatively simple and foregoes many of the common "features" of traditional servers. In fact, CoreOS does not even have a package manager. Instead, all additional applications are expected to run as Docker containers, allowing for isolation, portability, and external management of the services.
+ホスト自身は比較的シンプルで、普通のサーバの「機能」の多くは削られています。CoreOS にはパッケージ管理ソフトウェアもありません。その代わり、アプリケーションは Docker コンテナとして起動することが期待されています。これにより、リソースの隔離やポータビリティ、コンテナ外からのサービスの管理が可能になります。
 
-At boot, CoreOS reads a user-supplied configuration file called "cloud-config" to do some initial configuration. This file allows CoreOS to connect with other members of a cluster, start up essential services, and reconfigure important parameters. This is how CoreOS is able to immediately join a cluster as a working unit upon creation.
+CoreOS は起動時に、"cloud-config" という設定ファイルを読み込みます。この設定情報はクラスタ内の他のノードと接続したり、基本的なサービスの起動や重要なパラメータを再設定するために使われます。これにより CoreOS は起動と同時にクラスタの一員として働きはじめられます。
 
-Usually, the "cloud-config" file will, at a minimum, tell the host how to join an existing cluster and command the host to boot up two services called etcd and fleet. All three of these actions are related. They let the new host connect with the existing servers and provide the tools necessary to configure and manage each node within the cluster. Basically, these are the requirements to bootstrap a CoreOS node into a cluster.
+通常 "cloud-config" ファイルは、最低でもクラスタへ参加する方法と `etcd` および `fleet` を起動するコマンドを記述します。この3つは互いに関連しています。これらの情報は新しいノードをクラスタ内のノードと接続させ、クラスタ内のノードを設定または管理する手段を提供します。これは CoreOS  ノードがクラスタに参加するために必要です。
 
-The etcd daemon is used to store and distribute data to each of the hosts in a cluster. This is useful for keeping consistent configurations and it also serves as a platform with which services can announce themselves. This service-discovery mechanism can be used by other services to query for information in order to adjust their configuration details. For instance, a load balancer would be able to query etcd for the IP addresses of multiple backend web servers when it starts up.
+`etcd` デーモンはデータをクラスタ内の各ノードに伝播します。クラスタ全体で一貫性のある設定情報を保持することと、どのサービスが他ノードに情報伝達するのかを管理するために有用です。このサービス・ディスカバリ機構は、サービスが自身の設定情報を問い合わせるために使われます。例えば、ロードバランサが背後にいるウェブサーバのIPアドレスを `etcd` に尋ねるケースなどが考えられるでしょう。
 
-The fleet daemon is basically a distributed init system. It works by hooking into the systemd init system on each individual host in a cluster. It handles service scheduling, constraining the deployment targets based on user-defined criteria. Users can conceptualize the cluster as a single unit with fleet, instead of having to worry about each individual server.
+`fleet` デーモンは分散 init システムとして機能します。`fleet` はクラスタに存在する各ノードの systemd init にフックし、サービスのスケジューリングや、ユーザ定義にもとづいたデプロイ対象の制限などを行います。ユーザは `fleet` のおかげで、個々のノードの状態をいちいち心配することなく、クラスタを一つのマシンとして捉えることができます。
 
-Now that you have a general idea about the system as a whole, let's go over some more details about each of the specific components. Understanding the role each of these plays is important.
+CoreOS システムの振る舞いについてイメージが湧いたでしょうか。それでは次に各々のコンポーネントについて詳細に見ていきましょう。これらのコンポーネントについて理解することは、とても大切です。
 
-### A Basic Overview of Docker
+### Docker の概要
 
-Docker is a containerization system that utilizes LXC, also known as Linux containers, and uses kernel namespacing and cgroups in order to isolate processes.
+Docker は LXC (Linux コンテナ) を利用したコンテナ・システムです。カーネルの名前空間と cgroups を使い、各々のプロセスを隔離します。
 
-The isolation helps keep the running environment of the application clean and predictable. One of the main benefits of this system though is that it makes distributing software trivial. A Docker container should be able to run exactly the same regardless of the operating environment. This means that a container built on a laptop can run seamlessly on a datacenter-wide cluster.
+このことから、アプリケーションは外部環境の影響を受けずに動作することができます。つまり、ソフトウェアの分散がぐっと簡単になるのです。Docker コンテナはどの環境においても同じように動くので、ノートパソコンで開発したコンテナはデータセンタのクラスタでも同様に動きます。
 
-Docker allows you to distribute a working software environment with all of the necessary dependencies. Docker containers can run side-by-side with other containers, but act as an individual server. The advantage of Docker containers over virtualization is that Docker does not seek to emulate an entire operating system, it only implements the components necessary to get the application to run. Because of this, Docker has many of the benefits of virtualization, but without the heavy resource cost.
+Docker を使い、ソフトウェア自身と実行環境を一緒に配布できます。Docker コンテナは他のコンテナと協調して動作することもできるし、一つのサーバとして動かすこともきます。仮想化技術と比較した場合の Docker のメリットは、OS 全体をエミュレートしないことです。Docker はアプリケーションに必要なコンポーネントのみをエミュレートします。したがって、仮想化と同じようなことが可能でありながら、計算資源をそれほど使わずにすみます。
 
-CoreOS leverages Docker containers for any software outside of the small set included in the base installation. This means that almost everything will have to run within a container. While this might seem like a hassle at first, it makes cluster orchestration significantly easier. CoreOS is designed to primarily be manipulated at the cluster-level, not at the level of individual servers.
+CoreOS は Docker コンテナを一段と便利なものにします。CoreOS では、ほとんど全てのアプリケーションがコンテナ内で動くのです。ちょっと大変なように思えるかもしれませんが、クラスタ間での協調がぐっと容易になります。CoreOS は基本的にクラスタレベルで動作するように設計されており、単体のサーバとして使われることを想定しているわけではないのです。
 
-This makes distributing services and spreading out your load easy on CoreOS. The included tools and services will allow you to start processes on any of the available nodes within your supplied constraints. Docker allows these services and tasks to be distributed as self-contained chunks instead of applications that must be configured on each node.
+CoreOS では、このようにして簡単に分散サービスを運用できます。CoreOS に含まれるツールは、指定した条件を満たす計算資源を持つノードでのプロセス実行を可能にします。Docker は各ノードを個別に設定せずとも、分散システムにおいて協調して動作する自己充足的な単位として振る舞うことが可能です。
 
-A Basic Overview of Etcd
-In order to provide a consistent set of global data to each of the nodes in a cluster and to enable service discovery functionality, a service called etcd was developed.
+### Etcd の概要
 
-The etcd service is a highly available key-value store that can be used by each node to get configuration data, query information about running services, and publish information that should be known to other members. Each node runs its own etcd client. These are configured to communicate with the other clients in the cluster to share and distribute information.
+一貫性のあるグローバルなデータを各ノード間で共有し、サービスディカバリ機能を実現するために `etcd` は開発されました。
 
-Applications wishing to retrieve information from the store simply need to connect to the etcd interface on their local machine. All etcd data will be available on each node, regardless of where it is actually stored and each stored value will be distributed and replicated automatically throughout the cluster. Leader elections are also handled automatically, making management of the key-store fairly trivial.
+`etcd` サービスは可用性の高い key-value ストアであり、各ノードは設定情報をここから読み込みます。また、稼働中のサービスについての情報を検索したり、よそのノードに知らせるべき情報を書き出すためにも使われます。それぞれのノードは自身の `etcd` クライアントを持ち、他のクライアントとも情報を共有できるように設定されます。
 
-To interact with etcd data, you can either use the simple HTTP/JSON API (accessible at http://127.0.0.1:4001/v2/keys/ by default), or you can use an included utility called etcdctl to manipulate or read data. Both the etcdctl command and the HTTP API are simple and predictable ways of interacting with the store.
+各アプリケーションは、単にローカルの `etcd` インタフェースに接続するだけで情報を取得できます。全ての `etcd` データは、実際にそれがどこで保存されているかに関わらず、どのノードでも取得可能です。データはクラスタ内で自動的に分散され、複製されるためです。リーダー選挙も自動で行われるため、key-value ストアの管理は簡単です。
 
-It is important to realize that HTTP API is also accessible to applications running within Docker containers. This means that configuration for individual containers can take into account the values stored in etcd.
+`etcd` データを扱うには HTTP/JSON API を使うか (デフォルトのエンドポイントは http://127.0.0.1:4001/v2/keys/)、`etcd` に含まれている `etcdctl` というユーティリティを使います。どちらの方法でも簡単にデータを扱うことができます。
 
-### A Basic Overview of Fleet
+HTTP API は Docker コンテナの中からもアクセス可能であることに注目してください。つまり、各コンテナは `etcd` にある値を参照することができるのです。
 
-In order to actually orchestrate the CoreOS clusters that you are building, a tool called fleet is used. A rather simple concept, fleet acts as a cluster-wide init system.
+### Fleet の概要
 
-Each individual node within a clustered environment operates its own conventional systemd init system. This is used to start and manage services on the local machine. In a simplified sense, what fleet does is provide an interface for controlling each of the cluster members' systemd systems.
+実際に CoreOS クラスタを作成するには `fleet` というツールが使われます。簡単に言えば、`fleet` はクラスタで機能する init システムです。
 
-You can start or stop services or get state information about running processes across your entire cluster. However, fleet does a few important things to make this more usable. It handles the process distribution mechanism, so it can start services on less busy hosts.
+クラスタ内の各ノードは伝統的な systemd の init を使います。これは自身のサービスを開始するためのものです。単純化してしまえば、`fleet` はクラスタのメンバーの systemd を管理するインタフェースを提供するのです。
 
-You can also specify placement conditions for the services you are running. You can insist that a service must or must not run on certain hosts depending on where they are located, what they are already running, and more. Because fleet leverages systemd for starting the local processes, each of the files which define services are systemd unit files (with a few custom options). You can pass these configuration files into fleet once and manage them for the entire cluster.
+サービスの起動や停止、クラスタ内で動いているプロセスのステータス情報の取得にくわえて、`fleet` はさらに重要な事も行います。`fleet` はプロセスを分散する機構を持ち、より負荷の小さいホストでサービスを実行することもできるのです。
 
-This flexibility makes it simple to design highly available configurations. For instance, you can require that each of your web server containers be deployed on separate nodes. You can similarly ensure that a helper container be deployed only on nodes that are running the parent container.
+起動するサービスに対して条件を指定することもできます。例えば、サービスを特定のホストでのみ動かすように指定することもできます。ホストがどこに存在するのか、すでに動作しているプロセスは何なのか、などによってです。`fleet` はホストにおけるプロセスの起動に systemd を使うため、サービスを定義するのは systemd の Unit ファイルになります (いくつかのカスタムオプションもあります)。これらの設定ファイルを `fleet` に渡すと、クラスタ内で管理されることになります。
 
-Any of the member nodes can be used to manage the cluster using the fleetctl utility. This allows you to schedule services, manage nodes, and see the general state of your systems. The fleetctl program will be your main interface with your cluster.
+この柔軟性は高可用性を持つシステムを設計するために役立ちます。例えば、ウェブサーバとして振る舞うコンテナを複数のノードにデプロイすることができます。同様に、依存関係のあるコンテナが動いているノードにのみ、コンテナをデプロイすることも可能です。
 
-### Conclusion
+全てのノードにおいて、クラスタを `fleectl` で管理できます。サービスのスケジューリングや、ノードの管理、システムのステータスを監視できます。`fleetctl` はクラスタに対するインタフェースの役割を果たします。
 
-CoreOS might be different from most other Linux distributions you may be familiar with. Each of the design decisions was made with ease of cluster management and application portability in mind. This resulted in a focused, powerful distribution built to address the needs of modern infrastructure and application scaling.
+### まとめ
 
-To learn more about how to get started, check out our guide on [getting a CoreOS cluster up and running on DigitalOcean](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-coreos-cluster-on-digitalocean).
+CoreOS は多くの Linux ディストリビューションとは違います。設計上の意志決定はクラスタの管理のしやすさや、ポータビリティにもとづいて行われています。このような思想から、CoreOS という強力な、モダンでスケーラブルなディストリビューションが生まれました。
+
+さらに CoreOS について興味があれば、[CoreOS クラスタリングに関するガイド](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-coreos-cluster-on-digitalocean)をご覧ください。

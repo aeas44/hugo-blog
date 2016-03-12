@@ -1,5 +1,7 @@
 # Docker は何の役に立つの?
 
+(お蔵入り: 意味のある翻訳にするのが難しくて労力に見合わない)
+
 この記事は「[What does Docker provide if not virtualization?](https://opensource.com/business/14/8/docker-is-not-virtualization)」の翻訳記事です。
 
 (画像)
