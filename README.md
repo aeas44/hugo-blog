@@ -24,6 +24,3 @@ $ hugo -D -t hugo-hikari-theme
 
 `public` の下にビルド結果が保存される。
 
-## GitHub Pages への反映
-
-`public` ディレクトリを `aeas44.github.io` リポジトリに移して `git push` する。
